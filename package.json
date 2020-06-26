@@ -1,0 +1,39 @@
+{
+  "name": "distributed-timer",
+  "version": "1.0.0",
+  "description": "distributed, fault-tolerant & scalable implementation of setTimeout",
+  "main": "./index.js",
+  "scripts": {
+    "test": "mocha --recursive --exit",
+    "lint": "semistandard --fix"
+  },
+  "author": "dubey07.abhishek@gmail.com",
+  "keywords": [
+    "timer",
+    "scheduler",
+    "schedule",
+    "scheduling",
+    "job",
+    "setTimeout",
+    "set-timeout",
+    "scalable",
+    "distributed",
+    "fault-tolerant",
+    "dynamodb",
+    "scan",
+    "rest"
+  ],
+  "dependencies": {
+    "aws-sdk": "^2.197.0",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1",
+    "uuid": "^3.2.1",
+    "winston": "^2.4.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^8.0.1",
+    "semistandard": "^14.2.0"
+  }
+}
