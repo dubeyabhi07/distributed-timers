@@ -2,7 +2,8 @@
 #### npm package to implement timers in distributed, fault-tolerant, stateless and scalable manner, using various databases for persistence.
 
 [![npm version](https://badge.fury.io/js/distributed-timers.svg)](https://badge.fury.io/js/distributed-timers)
-![David](https://img.shields.io/david/dubeyabhi07/distributed-timers)
+![GitHub](https://img.shields.io/github/license/dubeyabhi07/distributed-timers)
+![npm](https://img.shields.io/npm/dw/distributed-timers)
 
 ### Why distributed-timers ?
 - The setTimeout functionality offered by Node.js is stateful and not fault tolerant, it will loose all the timer info once the server goes down.
