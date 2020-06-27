@@ -1,6 +1,6 @@
 {
   "name": "distributed-timers",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "distributed, fault-tolerant, stateless and scalable implementation of setTimeout",
   "main": "./index.js",
   "scripts": {
