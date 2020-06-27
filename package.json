@@ -1,15 +1,25 @@
 {
-  "name": "distributed-timer",
+  "name": "distributed-timers",
   "version": "1.0.0",
-  "description": "distributed, fault-tolerant & scalable implementation of setTimeout",
+  "description": "distributed, fault-tolerant, stateless and scalable implementation of setTimeout",
   "main": "./index.js",
   "scripts": {
     "test": "mocha --recursive --exit",
     "lint": "semistandard --fix"
   },
   "author": "dubey07.abhishek@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dubeyabhi07/distributed-timers.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dubeyabhi07/distributed-timers/issues"
+  },
   "keywords": [
     "timer",
+    "persistent",
+    "stateless",
+    "timers",
     "scheduler",
     "schedule",
     "scheduling",
@@ -21,11 +31,13 @@
     "fault-tolerant",
     "dynamodb",
     "scan",
+    "node",
+    "npm",
+    "callback",
     "rest"
   ],
   "dependencies": {
     "aws-sdk": "^2.197.0",
-    "request": "^2.81.0",
     "request-promise": "^4.2.1",
     "uuid": "^3.2.1",
     "winston": "^2.4.0"
