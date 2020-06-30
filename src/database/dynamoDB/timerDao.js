@@ -110,11 +110,11 @@ exports.checkUnchanged = function (timerId) {
     };
     dynamoDbClient.query(params, (err, data) => {
       if (err) { reject(err); } else {
-        if (data.Count !== 0 && data.Item[0].hasChanged === true) {
+        if (data.Count !== 0 && data.Items[0].hasChanged === true) {
           if (config.getConfig().verboseLogging === true) {
             log.info(logger.printLog('timer was modified after being loaded into cache, callback to be withheld'));
           }
-          reject(new Error('does not exist!'));
+          reject(new Error('CallBackWithheld'));
         } else {
           resolve();
         }
@@ -127,7 +127,7 @@ exports.fetchTimers = function (period) {
   return new Promise((resolve, reject) => {
     const d = new Date();
     if (config.getConfig().verboseLogging === true) {
-      log.info(logger.printLog('fetching form db......'));
+      log.info(logger.printLog('fetching from db......'));
     }
     const et = d.getTime() + period;
     var params = {

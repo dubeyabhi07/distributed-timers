@@ -102,7 +102,7 @@ function cacheTimer(timerInfo) {
             .then(() => { return timerDao.conditionalDelete(timerInfo.id) })
             .then(() => { return interface.sendCallback(response) })
             .catch(err => {
-                if (err.code !== 'ConditionalCheckFailedException') {
+                if (err.code !== 'ConditionalCheckFailedException' && err.message !== 'CallBackWithheld') {
                     log.error(logger.printLog(`Error sending callback : timerID = ${timerInfo.id}, error = ${err}`));
                 }
             })

@@ -37,7 +37,7 @@ exports.deleteTimer = function (timerId) {
 exports.updateTimer = function (request) {
   return new Promise((resolve, reject) => {
     if (config.getConfig().verboseLogging === true) {
-      log.info(logger.printLog(`update-request : ${request}`));
+      log.info(logger.printLog(`update-request : ${JSON.stringify(request)}`));
     }
     timerDao.verifyTimer(request.timerId)
       .then((data) => {
@@ -62,6 +62,7 @@ exports.addTimer = function (request) {
   return new Promise((resolve, reject) => {
     timerId = uuidv1();
     if (config.getConfig().verboseLogging === true) {
+      log.info(logger.printLog(`create-request : ${JSON.stringify(request)}`));
       log.info(logger.printLog(`create-request, id assigned = ${timerId} `));
     }
     timerDao.addTimer(request, timerId)
@@ -87,10 +88,10 @@ exports.sendCallback = function (callbackResponse) {
     }
   };
   if (config.getConfig().verboseLogging === true) {
-    log.info(logger.printLog(`callback response to be sent : ${opts} `));
+    log.info(logger.printLog(`callback response to be sent : ${JSON.stringify(opts)} `));
   }
   return rp(opts)
     .catch((err) => {
-      log.info(logger.printLog(`Error : ${err} `));
+      log.info(logger.printLog(`Error : ${JSON.stringify(err)} `));
     });
 };

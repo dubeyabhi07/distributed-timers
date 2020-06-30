@@ -26,7 +26,7 @@
 ### How to use ?
 
 - If running on localhost, download and run [dynamodb-local](https://medium.com/@vschroeder/install-a-local-dynamodb-development-database-on-your-machine-82dc38d59503)
-- Install the package :  ``` npm install distributed-timers --save-dev```
+- Install the package :  ``` npm install distributed-timers --save```
 - ***Initializing***  : 
 ```
 var timerLib = require('distributed-timers');
@@ -42,7 +42,7 @@ const databaseParams = {
   writeCapacityUnits: 5,                // wite capacity for main table.
   scanPeriod: 60000,                    // periodic scan period in miliseconds
   endpoint: 'http://localhost:8000',    // endpoint 
-  'verbose-logging': true               // option to select whether to enable detailed logs.
+  verboseLogging: true                  // option to select whether to enable detailed logs.
 };
 
 timerLib.init(databaseParams);
@@ -58,14 +58,20 @@ var timerParams = {
       key: 'value'                           
     }
   }
-  
-  timerId = await timerLib.create(timerParams);
+let timerId;                                // id to keep track of timer stored in db.
+timerLib.create(timerParams)
+        .then(function(timerInfo){
+            timerId = timerIdInfo.timerId;
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
   
 ```
 - ***Updating an existing timer :***
 ```
 var updateTimerParams = {
-  timerId: <timerId>,                           //timerId of timer to be updated
+  timerId: <timerId>,                       //timerId of timer to be updated
   timeout: 1000,
   callback: {
     url: 'https:localhost:8000/dummy-url',
@@ -75,12 +81,21 @@ var updateTimerParams = {
   }
 };
 
-updatedTimerId = await timerLib.update(updateTimerParams);
+timerLib.update(updateTimerParams)
+         .then(function(timerInfo){
+             timerId = timerInfo.timerId;       // upon a successful update timerID will be equal to updateTimerParams.timerId
+         })
+         .catch((err)=>{
+             console.log(err)
+         })
 
 ```
 - ***Deleting an existing timer :***
 ```
 var timerIdTobeDeleted = <timerId>            // timerId of timer to be deleted
-await timerLib.delete(timerIdTobeDeleted)
+timerLib.delete(timerIdTobeDeleted)
+       .catch((err)=>{
+           console.log(err)
+       })
 
 ```
