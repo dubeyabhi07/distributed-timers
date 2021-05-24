@@ -144,3 +144,22 @@ exports.fetchTimers = function (period) {
     });
   });
 };
+
+
+exports.operateOnMultipleTimers = function (requestArray) {
+  return new Promise((resolve, reject) => {
+    const params = {
+      RequestItems:{
+        [config.getConfig().tableName]:requestArray
+      }
+    }
+    dynamoDbClient.batchWrite(params,function(err,data){
+      if(err){
+        reject(err);
+      }
+      else{
+        resolve(data);
+      }
+    })
+  });
+};
