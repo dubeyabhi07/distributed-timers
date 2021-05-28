@@ -32,7 +32,7 @@ var timerLib = require('distributed-timers');
 
 const databaseParams = {
   database: 'dynamoDB',                 // type of database (only AWS dynamodb is supported for now). 
-  region: 'ap-south-1',                 // region of database.
+  region: 'local',                 // region of database.
   isLocal: true,                        // whether database is running on local machine or cloud.
   tableName: 'timers',                  // tablename for new table that is to be created for timers.
   readCapacityUnitsForGSI: 5,           // read capacity for Global Secondry Index.  (dynamoDb specific)
@@ -93,6 +93,55 @@ timerLib.update(updateTimerParams)
 ```
 var timerIdTobeDeleted = <timerId>            // timerId of timer to be deleted
 timerLib.delete(timerIdTobeDeleted)
+       .catch((err)=>{
+           console.log(err)
+       })
+
+```
+
+
+- ***Adding timers in batch :***
+```
+const batchTimerRequest = [
+  { timerReference : "first-timer-of-batch",         // new-field , when timerIDs are returned it helps keep track of timer to which it points to.
+    timerInfo :{
+      timeout: 10000,                                //timeout in seconds
+      callback: {
+        url: 'https:localhost:8000/dummy-url',       // url to which the callback has to be sent
+        message: {                                   // JSON object to be received when the timer expires.
+          key: 'batch1'
+        }
+      }
+    }
+  },
+  { timerReference : "second-timer-of-batch",
+    timerInfo :{
+      timeout: 10000,
+      callback: {
+        url: 'https:localhost:8000/dummy-url',
+        message: {
+          key: 'batch2'
+        }
+      }
+    }
+  }
+];
+
+
+timerLib.batchCreate(batchTimerRequest)
+        .then(function(response){
+            batchResponse = response;                // it will be of the form [{timerReference1 : timerId1 },{....}] 
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+```
+
+
+- ***Deleting timers in batch :***
+```
+var timerIdsTobeDeleted = [<timerId1>,<...>]            // list of timerIds of timers to be deleted
+timerLib.batchDelete(timerIdsTobeDeleted)
        .catch((err)=>{
            console.log(err)
        })

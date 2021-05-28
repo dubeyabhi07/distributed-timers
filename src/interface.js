@@ -95,3 +95,109 @@ exports.sendCallback = function (callbackResponse) {
       log.info(logger.printLog(`Error : ${JSON.stringify(err)} `));
     });
 };
+
+
+exports.createMultiple = function(req){
+  if (config.getConfig().verboseLogging === true) {
+    log.info(logger.printLog(`multiple-create-request : ${JSON.stringify(req)}`));
+  }
+  return new Promise((resolve,reject)=>{
+    if(req.length>25){
+      log.error(logger.printLog("error : Request length exeeds!"));
+      reject(new Error("invalid method : request length is more than 25"));
+    }
+    else{
+      const d = new Date();
+      const executionArray =[];
+      const responseObj = [];
+      const hashIdMap =[];
+      req.forEach(timerRequest =>{
+        const hashIdNew = uuidv1();
+        responseObj[timerRequest.timerReference] = hashIdNew;
+        hashIdMap[hashIdNew] = timerRequest.timerReference;
+        executionArray.push({
+          PutRequest:{
+            Item:{
+              id: hashIdNew,
+              callback: timerRequest.timerInfo.callback,
+              GSI: 'gsi',
+              expireTime: timerRequest.timerInfo.timeout * 1000 + d.getTime(),
+              hasChanged: false
+            }
+          }
+        })
+      });
+
+      timerDao.operateOnMultipleTimers(executionArray)
+      .then(function(data){
+        if(Object.keys(data.UnprocessedItems).length !== 0){
+          if (config.getConfig().verboseLogging === true) {
+            log.info(logger.printLog(`Some timers could not be added to database`));
+          }
+          const UnprocessedItems = data.UnprocessedItems[config.getConfig().tableName];
+          UnprocessedItems.forEach(item=>{
+            const UnprocessedItemsRef = item.PutRequest.Item.id;
+            responseObj[hashIdMap[UnprocessedItemsRef]]='';
+          })
+        }
+        else{
+          if (config.getConfig().verboseLogging === true) {
+            log.info(logger.printLog(`All timers were successfully added to database`));
+          }
+        }
+        resolve(responseObj);
+      })
+      .catch(err => {
+        log.error(logger.printLog(JSON.stringify(err)));
+        reject(err);
+      });
+    }
+  })
+};
+
+
+exports.deleteMultiple = function(req){
+  if (config.getConfig().verboseLogging === true) {
+    log.info(logger.printLog(`multiple-delete-request : ${JSON.stringify(req)}`));
+  }
+  return new Promise(function(resolve,reject){
+    if(req.length>25){
+      log.error(logger.printLog("error : Request length exeeds!"));
+      reject(new Error("invalid method : request length is more than 25"));
+    }
+    else{
+      const executionArray =[];
+      req.forEach(id=>{
+        executionArray.push({
+          DeleteRequest:{
+            Key:{id:id}
+          }
+        })
+      });
+
+      const responseArray =[];
+      
+      timerDao.operateOnMultipleTimers(executionArray)
+      .then(function(data){
+        if(Object.keys(data.UnprocessedItems).length !== 0){
+          if (config.getConfig().verboseLogging === true) {
+            log.info(logger.printLog(`Some timers could not be deleted from database`));
+          }
+          const UnprocessedItems = data.UnprocessedItems[config.getConfig().tableName];
+          UnprocessedItems.forEach(item=>{
+            const UnprocessedItemsRef = item.DeleteRequest.Item.id;
+            responseArray.push(UnprocessedItemsRef);
+          })
+        }
+        else if(config.getConfig().verboseLogging === true){
+          log.info(logger.printLog(`All timers deleted from database`));
+        }
+        resolve({unprocessed_request: responseArray});
+      })
+      .catch(err => {
+        log.error(logger.printLog(JSON.stringify(err)));
+        reject(err);
+      });
+    }
+  });
+};
