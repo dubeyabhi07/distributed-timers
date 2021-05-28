@@ -160,7 +160,7 @@ exports.deleteMultiple = function(req){
   if (config.getConfig().verboseLogging === true) {
     log.info(logger.printLog(`multiple-delete-request : ${JSON.stringify(req)}`));
   }
-  return new Promise(function(req,resp){
+  return new Promise(function(resolve,reject){
     if(req.length>25){
       log.error(logger.printLog("error : Request length exeeds!"));
       reject(new Error("invalid method : request length is more than 25"));
@@ -188,6 +188,9 @@ exports.deleteMultiple = function(req){
             const UnprocessedItemsRef = item.DeleteRequest.Item.id;
             responseArray.push(UnprocessedItemsRef);
           })
+        }
+        else if(config.getConfig().verboseLogging === true){
+          log.info(logger.printLog(`All timers deleted from database`));
         }
         resolve({unprocessed_request: responseArray});
       })
