@@ -18,6 +18,8 @@ let initialize = function (params) {
             main.create = interface.addTimer;
             main.delete = interface.deleteTimer;
             main.update = interface.updateTimer;
+            main.batchCreate = interface.createMultiple;
+            main.batchDelete = interface.deleteMultiple;
             core.start();
         })
         .catch(err => {log.error(logger.printLog(`Error : ${err}`));})
