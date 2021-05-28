@@ -39,9 +39,34 @@ const updateTimer = {
   }
 };
 
+const batchTimerRequest = [
+  { timerReference : "first-timer-of-batch",
+    timerInfo :{
+      timeout: 10000,
+      callback: {
+        url: 'https:localhost:8000/dummy-url',
+        message: {
+          key: 'batch1'
+        }
+      }
+    }
+  },
+  { timerReference : "second-timer-of-batch",
+    timerInfo :{
+      timeout: 10000,
+      callback: {
+        url: 'https:localhost:8000/dummy-url',
+        message: {
+          key: 'batch2'
+        }
+      }
+    }
+  }
+];
+
 const timerLibParams = {
   database: 'dynamoDB',
-  region: 'ap-south-1',
+  region: 'local',
   isLocal: true,
   tableName: 'timers',
   readCapacityUnitsForGSI: 5,
@@ -50,11 +75,12 @@ const timerLibParams = {
   writeCapacityUnits: 5,
   scanPeriod: 60000, // 1 minute
   endpoint: 'http://localhost:8000',
-  'verbose-logging': true
+  verboseLogging : true
 };
 
 let quickTimerId;
 let longTimerId;
+let batchRequestResp;
 
 describe('Distributed-Timer-Test', function () {
   this.timeout(20000);
@@ -115,6 +141,24 @@ describe('Distributed-Timer-Test', function () {
         assert.equal(returnedErr.message, 'invalid method : timer does not exist');
       });
   });
+
+
+  it('Batch request should send timerID for every reference',async ()=>{
+    batchRequestResp = await timerLib.batchCreate(batchTimerRequest);
+    console.log(batchRequestResp)
+    assert.equal(batchTimerRequest.length,Object.keys(batchRequestResp).length, 'Batch request should create multiple timers');
+  })
+
+  
+  it('Batch request should delete multiple timers',async ()=>{
+    let deleteReqArr = []
+    deleteReqArr.push(batchRequestResp["first-timer-of-batch"])
+    deleteReqArr.push(batchRequestResp["second-timer-of-batch"])
+    let batchDeleteRequestResp = await timerLib.batchDelete(deleteReqArr);
+    assert.equal(batchDeleteRequestResp.unprocessed_request.length,0,'Batch request should delete multiple timers');
+  })
+
+  
 
   after(function (done) {
     setTimeout(async () => {
